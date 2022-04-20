@@ -146,7 +146,7 @@ class CategoryControllerCore extends FrontController
             $id_hotel = HotelBranchInformation::getHotelIdByIdCategory($htl_id_category);
 
             $id_cart = $this->context->cart->id;
-            $id_guest = $this->context->cookie->id_guest;
+            $id_guest = $this->context->cart->id_guest;
 
             $obj_booking_dtl = new HotelBookingDetail();
             $booking_data = $obj_booking_dtl->DataForFrontSearch($date_from, $date_to, $id_hotel, 0, 0, 0, 0, -1, 0, 0, $id_cart, $id_guest);
@@ -218,6 +218,8 @@ class CategoryControllerCore extends FrontController
 
     public function displayAjaxFilterResults()
     {
+        $response = array('status' => 'ko');
+
         $this->display_header = false;
         $this->display_footer = false;
 
@@ -262,7 +264,7 @@ class CategoryControllerCore extends FrontController
             $id_hotel = HotelBranchInformation::getHotelIdByIdCategory($htl_id_category);
 
             $id_cart = $this->context->cart->id;
-            $id_guest = $this->context->cookie->id_guest;
+            $id_guest = $this->context->cart->id_guest;
 
             $obj_booking_dtl = new HotelBookingDetail();
             $booking_data = $obj_booking_dtl->DataForFrontSearch($date_from, $date_to, $id_hotel, 0, 0, $adult, $child, $ratting, $amenities, $price, $id_cart, $id_guest);
@@ -286,9 +288,13 @@ class CategoryControllerCore extends FrontController
 
                 array_multisort($indi_arr, $direction, $booking_data['rm_data']);
             }
+
             $this->context->smarty->assign(array('booking_data' => $booking_data));
+            $html = $this->context->smarty->fetch('_partials/room_type_list.tpl');
+            $response['status'] = 'ok';
+            $response['html_room_type_list'] = $html;
         }
-        die($this->context->smarty->fetch(_PS_THEME_DIR_.'_partials/room_type_list.tpl'));
+        die(json_encode($response));
     }
 
     /**
